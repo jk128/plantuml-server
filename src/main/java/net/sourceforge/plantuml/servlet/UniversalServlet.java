@@ -40,6 +40,23 @@ public class UniversalServlet extends HttpServlet {
         }
     }
 
+    private String validateUmlSource(String text) {
+        // encapsulate the UML syntax if necessary
+        if (text.startsWith("@start")) {
+            return text;
+        } else {
+            StringBuilder plantUmlSource = new StringBuilder();
+            plantUmlSource.append("@startuml\n");
+            plantUmlSource.append(text);
+            if (text.endsWith("\n") == false) {
+                plantUmlSource.append("\n");
+            }
+            plantUmlSource.append("@enduml");
+            return plantUmlSource.toString();
+        }
+
+    }
+
     private void doSendImage(HttpServletRequest req, HttpServletResponse resp, String source) throws IOException {
         String format = req.getParameter("format");
         FileFormat fileFormat;
@@ -51,7 +68,7 @@ public class UniversalServlet extends HttpServlet {
         }
         DiagramResponse dr = new DiagramResponse(resp, fileFormat);
         try {
-            dr.sendDiagram(source);
+            dr.sendDiagram(validateUmlSource(source));
         } catch (IIOException iioe) {
             // Browser has closed the connection, so the HTTP OutputStream is closed
             // Silently catch the exception to avoid annoying log
