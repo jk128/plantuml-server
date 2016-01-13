@@ -20,6 +20,10 @@ public class UniversalServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String source = req.getParameter("source");
         String action = req.getParameter("action");
+        if (source == null || action == null) {
+            send400(resp, "source or action parameter missing");
+            return;
+        }
         switch (action) {
             case "image": doSendImage(req, resp, source); break;
             case "encode": doEncode(req, resp, source); break;
@@ -59,6 +63,10 @@ public class UniversalServlet extends HttpServlet {
 
     private void doSendImage(HttpServletRequest req, HttpServletResponse resp, String source) throws IOException {
         String format = req.getParameter("format");
+        if (format == null) {
+            send400(resp, "format parameter missing");
+            return;
+        }
         FileFormat fileFormat;
         switch(format) {
             case "png": fileFormat = FileFormat.PNG; break;
